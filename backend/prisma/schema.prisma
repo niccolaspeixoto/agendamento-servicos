@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id              String        @id @default(uuid())
+  name            String
+  durationMinutes Int
+  price           Decimal       @db.Decimal(10, 2)
+  appointments    Appointment[]
+  createdAt       DateTime      @default(now())
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  clientName  String
+  clientPhone String
+}
