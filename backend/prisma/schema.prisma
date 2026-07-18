@@ -9,16 +9,39 @@ datasource db {
 }
 
 model Service {
-  id              String        @id @default(uuid())
-  name            String
-  durationMinutes Int
-  price           Decimal       @db.Decimal(10, 2)
-  appointments    Appointment[]
-  createdAt       DateTime      @default(now())
+  id              String        @id @default(uuid()) //id do serviço
+  name            String //nome do serviço
+  durationMinutes Int //duração de tempo do serviço
+  price           Decimal       @db.Decimal(10, 2) //preço do serviço
+  appointments    Appointment[] //agendamento
+  createdAt       DateTime      @default(now()) //data e hora que foi agendado o serviço
 }
 
 model Appointment {
-  id          String   @id @default(uuid())
-  clientName  String
-  clientPhone String
+  id          String            @id @default(uuid()) //id do agendamento
+  clientName  String //nome do cliente que agendou
+  clientPhone String //telefone do cliente que agendou
+  service     Service           @relation(fields: [serviceId], references: [id]) //serviço que o cliente agendou
+  serviceId   String //id do serviço que agendou / referencia ao campo id da model de service.
+  date        DateTime          @db.Date //é uma dica pro db: so guarda dia/mes/ano, sem horário.
+  time        String //deixa registrado a hora, como texto(string) ex: "14:30"
+  status      AppointmentStatus @default(AGENDADO)
+  createdAt   DateTime          @default(now()) //data que foi criado o agendamento
+  updatedAt   DateTime          @updatedAt // data que foi atualizado ou editado.
+
+  @@unique([date, time]) //serve para nao ter agendamentos duplicados.
+}
+
+enum AppointmentStatus {
+  AGENDADO
+  CONFIRMADO
+  CONCLUIDO
+  CANCELADO
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 }
