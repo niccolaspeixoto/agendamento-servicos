@@ -1,0 +1,20 @@
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 15px;
+}
