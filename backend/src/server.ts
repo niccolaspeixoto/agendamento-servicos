@@ -17,7 +17,7 @@ app.get("/services", async (req, res) => {
 
 
 
-
+//app rodando na porta 3000
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT} 🚀`);
 });
