@@ -9,6 +9,7 @@ const app = express(); //cria a aplicação para podermos utilizar
 app.use(express.json());// traduz a requisição em json
 app.use(cors());//permite req e res de portas ou caminhos diferentes. Sem ele, o navegador bloquaria.
 
+const BUSINESS_HOURS = { start: 9, end: 18 };// horarios
 
 //rota para listar os serviços disponíveis
 app.get("/services", async (req, res) => {
@@ -47,6 +48,34 @@ app.post("/appointments", async (req, res) => {
 
     return res.status(500).json({ error: "Erro ao criar agendamento" });
   }
+});
+
+//rota para listar os horarios de agendamentos disponiveis
+app.get("/appointments/available", async (req, res) => {
+  const { date } = req.query;
+
+  if (typeof date !== "string") {
+    return res.status(400).json({ error: "Parâmetro 'date' é obrigatório" });
+  }
+
+  const allSlots: string[] = [];
+  for (let hour = BUSINESS_HOURS.start; hour < BUSINESS_HOURS.end; hour++) {
+    allSlots.push(`${hour.toString().padStart(2, "0")}:00`); // .padStart(2, "0") garante que sempre tenha 2 dígitos, preenchendo com 0 à esquerda se precisar
+  }
+
+  const bookedAppointments = await prisma.appointment.findMany({
+    where: { //localiza em especifico.
+      date: new Date(date), //filtra pela data específica que veio na url.
+      status: { not: "CANCELADO" }, //ele tira de visualização dos horarios agendados, assim deixando em horario livre.
+    },
+    select: { time: true }, //pedindo para ele trazer somente o campo time, para a aplicação ficar mais rápida e leve.
+  });
+
+
+  const bookedTimes = bookedAppointments.map((appointment) => appointment.time); // ele está mapeando o array de appointment e trazendo os horários.
+  const availableSlots = allSlots.filter((slot) => !bookedTimes.includes(slot)); //ele está filtrando o array de horários e trazendo somente os disponiveis.
+
+  return res.json(availableSlots);
 });
 
 
