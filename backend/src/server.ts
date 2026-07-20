@@ -79,6 +79,19 @@ app.get("/appointments/available", async (req, res) => {
 });
 
 
+//rota para ver todos os agendamentos
+app.get('/appointments', async (req, res) => {
+  const appointments = await prisma.appointment.findMany({
+    include: { service: true }, //além de trazer todos os campos de agendamento, traz tambem qual o service agendado(nome, duração, preço). Se nao tivesse ele, traria somente o id do service agendado.
+    orderBy: [{date: "asc"}, {time: "asc"}] // ordena os resultados de "asc"(ascendente). De menor/mais antigo para maio/mais recente. Ou seja, vai ordenar primeiro por data, depois os horários daquela data.
+  })
+
+  console.log(appointments)
+  res.status(200).json(appointments)
+})
+
+
+
 
 
 
