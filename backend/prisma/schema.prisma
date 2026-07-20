@@ -28,7 +28,6 @@ model Appointment {
   createdAt   DateTime          @default(now()) //data que foi criado o agendamento
   updatedAt   DateTime          @updatedAt // data que foi atualizado ou editado.
 
-  @@unique([date, time]) //serve para nao ter agendamentos duplicados.
 }
 
 enum AppointmentStatus {
