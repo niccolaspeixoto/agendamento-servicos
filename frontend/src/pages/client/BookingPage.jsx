@@ -8,6 +8,7 @@ import TimeSlotGrid from "../../components/client/TimeSlotGrid";
 import { getAvailableSlots } from "../../services/appointmentService";
 import AppointmentForm from "../../components/client/AppointmentForm";
 import { createAppointment } from "../../services/appointmentService";
+import ConfirmationScreen from "../../components/client/ConfirmationScreen";
 
 
 function BookingPage() {
@@ -24,6 +25,8 @@ function BookingPage() {
   const [confirmedAppointment, setConfirmedAppointment] = useState(null);
 
   const days = getNextDays(7);
+
+  const selectedService = services.find((service) => service.id === selectedServiceId);
 
   useEffect(() => {
     getServices()
@@ -65,7 +68,12 @@ function BookingPage() {
 
 
   if (confirmedAppointment) {
-    return <p>Agendamento confirmado! (tela de confirmação vem no próximo passo)</p>;
+    return(
+       <ConfirmationScreen
+      appointment={confirmedAppointment}
+      serviceName={selectedService.name}
+    />
+    )
   }
 
   return (
