@@ -1,0 +1,34 @@
+.card {
+  background-color: var(--color-surface);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+}
+
+.selected {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.selected .label {
+  color: white;
+}
+
+.dayNumber {
+  font-size: 16px;
+  font-weight: 600;
+}
