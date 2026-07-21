@@ -3,6 +3,9 @@ import cors from "cors";
 import { prisma } from "./lib/prisma.js";
 import { Prisma } from "../generated/prisma/client.js";
 
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
 import { createAppointmentSchema } from "./schemas/appointment.schema.js";
 
 const app = express(); //cria a aplicação para podermos utilizar
@@ -92,6 +95,30 @@ app.get("/appointments/available", async (req, res) => {
   const availableSlots = allSlots.filter((slot) => !bookedTimes.includes(slot)); //ele está filtrando o array de horários e trazendo somente os disponiveis.
 
   return res.json(availableSlots);
+});
+
+
+//rota de login do admin
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const admin = await prisma.admin.findUnique({ where: { email } });
+
+  if (!admin) {
+    return res.status(401).json({ error: "Credenciais inválidas" });
+  }
+
+  const passwordMatches = await bcrypt.compare(password, admin.passwordHash);
+
+  if (!passwordMatches) {
+    return res.status(401).json({ error: "Credenciais inválidas" });
+  }
+
+  const token = jwt.sign({ adminId: admin.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  return res.json({ token });
 });
 
 
