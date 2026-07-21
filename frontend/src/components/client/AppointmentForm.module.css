@@ -1,0 +1,49 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.field input {
+  background-color: var(--color-surface);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-text-primary);
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.error {
+  color: #C1662F;
+  font-size: 12px;
+}
+
+.submitButton {
+  background-color: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 16px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
