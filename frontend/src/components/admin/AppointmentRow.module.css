@@ -1,0 +1,46 @@
+.row {
+  background-color: var(--color-surface);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.clientName {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.details {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.statusSelect {
+  background-color: var(--color-bg);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: #C1662F;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { getAllAppointments } from "../../services/appointmentAdminService";
 import styles from "./DashboardPage.module.css";
+import AppointmentRow from "../../components/admin/AppointmentRow";
+import {  updateAppointmentStatus, deleteAppointment } from "../../services/appointmentAdminService";
 
 function DashboardPage() {
   const [appointments, setAppointments] = useState([]);
@@ -23,6 +25,15 @@ function DashboardPage() {
       .finally(() => setLoading(false));
   }
 
+  function handleStatusChange(id, status) {
+    updateAppointmentStatus(id, status).then(loadAppointments).catch(console.error);
+  }
+
+  function handleDelete(id) {
+    if (!confirm("Tem certeza que deseja excluir esse agendamento?")) return;
+    deleteAppointment(id).then(loadAppointments).catch(console.error);
+  }
+
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Agendamentos</h1>
@@ -38,15 +49,12 @@ function DashboardPage() {
       ) : (
         <div className={styles.list}>
           {filteredAppointments.map((appointment) => (
-            <div key={appointment.id} className={styles.row}>
-              <div>
-                <p className={styles.clientName}>{appointment.clientName}</p>
-                <p className={styles.details}>
-                  {appointment.service.name} · {appointment.clientPhone}
-                </p>
-              </div>
-              <span className={styles.status}>{appointment.status}</span>
-            </div>
+            <AppointmentRow
+              key={appointment.id}
+              appointment={appointment}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       )}
