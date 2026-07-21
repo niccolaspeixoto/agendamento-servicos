@@ -6,6 +6,8 @@ import { Prisma } from "../generated/prisma/client.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+
 import { createAppointmentSchema } from "./schemas/appointment.schema.js";
 
 const app = express(); //cria a aplicação para podermos utilizar
@@ -44,30 +46,30 @@ app.post("/appointments", async (req, res) => {
 
 
 
-    // a lógica de criar o agendamento
-    try {
-      const appointment = await prisma.appointment.create({
-        data: {
-          ...result.data,
-          date: new Date(result.data.date)
-        }
-      });
-
-      return res.status(201).json(appointment);
-    } catch (error) {
-
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError && // o instanceof checa se esse erro específico é do tipo que o Prisma usa pra erros conhecidos vindos do banco 
-        error.code === "P2002" // cada tipo de erro conhecido do Prisma tem um código próprio. P2002 especificamente significa "violação de constraint única", exatamente o cenário do nosso @@unique([date, time])
-      ) {
-        return res.status(409).json({ // 409 -> "sua requisição é válida, mas conflita com o estado atual dos dados"
-          error: "Esse horário já está ocupado. Escolha outro horário.",
-        });
+  // a lógica de criar o agendamento
+  try {
+    const appointment = await prisma.appointment.create({
+      data: {
+        ...result.data,
+        date: new Date(result.data.date)
       }
+    });
 
-      return res.status(500).json({ error: "Erro ao criar agendamento" });
+    return res.status(201).json(appointment);
+  } catch (error) {
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError && // o instanceof checa se esse erro específico é do tipo que o Prisma usa pra erros conhecidos vindos do banco 
+      error.code === "P2002" // cada tipo de erro conhecido do Prisma tem um código próprio. P2002 especificamente significa "violação de constraint única", exatamente o cenário do nosso @@unique([date, time])
+    ) {
+      return res.status(409).json({ // 409 -> "sua requisição é válida, mas conflita com o estado atual dos dados"
+        error: "Esse horário já está ocupado. Escolha outro horário.",
+      });
     }
-  });
+
+    return res.status(500).json({ error: "Erro ao criar agendamento" });
+  }
+});
 
 //rota para listar os horarios de agendamentos disponiveis
 app.get("/appointments/available", async (req, res) => {
@@ -123,7 +125,7 @@ app.post("/auth/login", async (req, res) => {
 
 
 //rota para ver todos os agendamentos
-app.get('/appointments', async (req, res) => {
+app.get('/appointments', authMiddleware, async (req, res) => {
   const appointments = await prisma.appointment.findMany({
     include: { service: true }, //além de trazer todos os campos de agendamento, traz tambem qual o service agendado(nome, duração, preço). Se nao tivesse ele, traria somente o id do service agendado.
     orderBy: [{ date: "asc" }, { time: "asc" }] // ordena os resultados de "asc"(ascendente). De menor/mais antigo para maio/mais recente. Ou seja, vai ordenar primeiro por data, depois os horários daquela data.
@@ -135,7 +137,7 @@ app.get('/appointments', async (req, res) => {
 
 
 //rota para mudar o status de um agendamento
-app.patch("/appointments/:id/status", async (req, res) => { //PATCH atualiza parcialmente, diferente do PUT, que atualiza um recurso inteiro.
+app.patch("/appointments/:id/status", authMiddleware, async (req, res) => { //PATCH atualiza parcialmente, diferente do PUT, que atualiza um recurso inteiro.
   const { id } = req.params; // pegando o id em params
   const { status } = req.body; // pegando o stauts do agendamento no body.
 
@@ -165,6 +167,25 @@ app.patch("/appointments/:id/status", async (req, res) => { //PATCH atualiza par
   }
 });
 
+
+//rota pra excluir agendamento
+app.delete("/appointments/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.appointment.delete({ where: { id } });
+    return res.status(204).send();
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return res.status(404).json({ error: "Agendamento não encontrado" });
+    }
+
+    return res.status(500).json({ error: "Erro ao excluir agendamento" });
+  }
+});
 
 
 const PORT = process.env.PORT || 3000;//se nao rodar na porta de ambiente do servidor, pode rodar na 3000 local.
