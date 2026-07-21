@@ -43,3 +43,14 @@
   border-radius: 999px;
   text-transform: capitalize;
 }
+
+.dateFilter {
+  background-color: var(--color-surface);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text-primary);
+  margin-bottom: 20px;
+}
