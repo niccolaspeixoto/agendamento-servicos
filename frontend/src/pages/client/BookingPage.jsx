@@ -6,6 +6,8 @@ import DayList from "../../components/client/DayList";
 import { getNextDays } from "../../utils/date";
 import TimeSlotGrid from "../../components/client/TimeSlotGrid";
 import { getAvailableSlots } from "../../services/appointmentService";
+import AppointmentForm from "../../components/client/AppointmentForm";
+import { createAppointment } from "../../services/appointmentService";
 
 
 function BookingPage() {
@@ -16,6 +18,11 @@ function BookingPage() {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
 
+  //estados para controlar o fluxo de envio do form
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [confirmedAppointment, setConfirmedAppointment] = useState(null);
+
   const days = getNextDays(7);
 
   useEffect(() => {
@@ -25,6 +32,7 @@ function BookingPage() {
       .finally(() => setLoading(false));
   }, []);
 
+
   useEffect(() => {
     if (!selectedDate) return;
 
@@ -32,6 +40,33 @@ function BookingPage() {
       .then(setAvailableSlots)
       .catch((error) => console.error(error));
   }, [selectedDate]);
+
+
+  async function handleFormSubmit(formData) {
+    const appointmentData = {
+      ...formData,
+      serviceId: selectedServiceId,
+      date: selectedDate,
+      time: selectedTime,
+    };
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const appointment = await createAppointment(appointmentData);
+      setConfirmedAppointment(appointment);
+    } catch (error) {
+      setSubmitError(error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+
+  if (confirmedAppointment) {
+    return <p>Agendamento confirmado! (tela de confirmação vem no próximo passo)</p>;
+  }
 
   return (
     <div className={styles.page}>
@@ -50,11 +85,13 @@ function BookingPage() {
         />
       )}
 
-      <DayList
-        days={days}
-        selectedDate={selectedDate}
-        onSelect={setSelectedDate}
-      />
+      {selectedServiceId && (
+        <DayList
+          days={days}
+          selectedDate={selectedDate}
+          onSelect={setSelectedDate}
+        />)}
+
 
       {selectedDate && (
         <TimeSlotGrid
@@ -63,8 +100,16 @@ function BookingPage() {
           onSelect={setSelectedTime}
         />
       )}
+
+      {selectedTime && (
+        <AppointmentForm
+          onSubmitSuccess={handleFormSubmit}
+          submitting={submitting}
+          submitError={submitError}
+        />
+      )}
     </div>
-  );
+  )
 }
 
 export default BookingPage;

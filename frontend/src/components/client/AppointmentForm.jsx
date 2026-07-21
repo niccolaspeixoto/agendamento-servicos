@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { appointmentFormSchema } from "../../schemas/appointmentSchema";
 import styles from "./AppointmentForm.module.css";
 
-function AppointmentForm() {
+function AppointmentForm({ onSubmitSuccess, submitting, submitError }) {
     const {
         register,
         handleSubmit,
@@ -13,7 +13,7 @@ function AppointmentForm() {
     });
 
     function onSubmit(data) {
-        console.log("Formulário válido, dados:", data);
+        onSubmitSuccess(data);
     }
 
     return (
@@ -39,9 +39,11 @@ function AppointmentForm() {
                 />
                 {errors.clientPhone && <span className={styles.error}>{errors.clientPhone.message}</span>}
             </div>
+            
+            {submitError && <p className={styles.error}>{submitError}</p>}
 
-            <button type="submit" className={styles.submitButton}>
-                Confirmar agendamento
+            <button type="submit" className={styles.submitButton} disabled={submitting}>
+                {submitting ? "Enviando..." : "Confirmar agendamento"}
             </button>
         </form>
     );
