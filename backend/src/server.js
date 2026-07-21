@@ -74,7 +74,7 @@ app.get("/appointments/available", async (req, res) => {
     return res.status(400).json({ error: "Parâmetro 'date' é obrigatório" });
   }
 
-  const allSlots: string[] = [];
+  const allSlots = [];
   for (let hour = BUSINESS_HOURS.start; hour < BUSINESS_HOURS.end; hour++) {
     allSlots.push(`${hour.toString().padStart(2, "0")}:00`); // .padStart(2, "0") garante que sempre tenha 2 dígitos, preenchendo com 0 à esquerda se precisar
   }

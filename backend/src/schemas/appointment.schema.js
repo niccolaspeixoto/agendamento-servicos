@@ -41,8 +41,3 @@ export const createAppointmentSchema = z.object({ // um objeto dos campos que es
     }
 
 )
-
-export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>; 
-// typeof createAppointmentSchema -> pega o "tipo" da própria variável do schema (não o dado validado, mas a estrutura Zod em si).
-// z.infer<...> —> "traduz" essa estrutura Zod pra um type puro do TypeScript.
-//export type CreateAppointmentInput = ... —> nomeia esse tipo gerado e exporta, pra usarmos na rota.
