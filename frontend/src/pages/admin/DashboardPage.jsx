@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { getAllAppointments } from "../../services/appointmentAdminService";
 import styles from "./DashboardPage.module.css";
 import AppointmentRow from "../../components/admin/AppointmentRow";
-import {  updateAppointmentStatus, deleteAppointment } from "../../services/appointmentAdminService";
+import { updateAppointmentStatus, deleteAppointment } from "../../services/appointmentAdminService";
+import { useNavigate } from "react-router-dom";
+import { clearToken } from "../../utils/auth";
 
 function DashboardPage() {
   const [appointments, setAppointments] = useState([]);
@@ -34,9 +36,22 @@ function DashboardPage() {
     deleteAppointment(id).then(loadAppointments).catch(console.error);
   }
 
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    clearToken();
+    navigate("/admin/login");
+  }
+
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Agendamentos</h1>
+      <div className={styles.headerRow}>
+        <h1 className={styles.title}>Agendamentos</h1>
+        <button onClick={handleLogout} className={styles.logoutButton}>
+          Sair
+        </button>
+      </div>
+
       <input
         type="date"
         value={dateFilter}
