@@ -1,5 +1,38 @@
+import { useEffect, useState } from "react";
+import styles from "./BookingPage.module.css";
+import { getServices } from "../../services/serviceService";
+import ServiceList from "../../components/client/ServiceList";
+
 function BookingPage() {
-  return <h1>Área do cliente</h1>;
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedServiceId, setSelectedServiceId] = useState(null);
+
+  useEffect(() => {
+    getServices()
+      .then(setServices)
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Agendar horário</h1>
+        <p className={styles.subtitle}>Escolha o serviço, dia e horário</p>
+      </header>
+
+      {loading ? (
+        <p>Carregando serviços...</p>
+      ) : (
+        <ServiceList
+          services={services}
+          selectedServiceId={selectedServiceId}
+          onSelect={setSelectedServiceId}
+        />
+      )}
+    </div>
+  );
 }
 
 export default BookingPage;
