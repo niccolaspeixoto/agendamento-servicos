@@ -7,7 +7,7 @@ function ConfirmationScreen({ appointment, serviceName }) {
   });
 
   const whatsappMessage = `Olá! Meu agendamento foi confirmado: ${serviceName}, dia ${formattedDate} às ${appointment.time}.`;
-  const whatsappUrl = `https://wa.me/55${appointment.clientPhone}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappUrl = `https://wa.me/5511952397051?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div className={styles.page}>
