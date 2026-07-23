@@ -9,7 +9,7 @@ function AppointmentRow({ appointment, onStatusChange, onDelete }) {
         <p className={styles.clientName}>{appointment.clientName}</p>
         <p className={styles.details}>
           {appointment.service.name} · {appointment.clientPhone} ·{" "}
-          {new Date(appointment.date).toLocaleDateString("pt-BR")} às {appointment.time}
+          {appointment.date.split("T")[0].split("-").reverse().join("/")} às {appointment.time}
         </p>
       </div>
 

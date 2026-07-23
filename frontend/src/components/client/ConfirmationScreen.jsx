@@ -1,7 +1,8 @@
 import styles from "./ConfirmationScreen.module.css";
 
 function ConfirmationScreen({ appointment, serviceName }) {
-  const formattedDate = new Date(appointment.date).toLocaleDateString("pt-BR", {
+  const [year, month, day] = appointment.date.split("T")[0].split("-");
+  const formattedDate = new Date(year, month - 1, day).toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "long",
   });
